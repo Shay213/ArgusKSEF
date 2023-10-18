@@ -1,0 +1,154 @@
+{
+  "Faktura": {
+    "Naglowek": {
+      "KodFormularza": { "#text": "FA", "@_kodSystemowy": "FA (2)", "@_wersjaSchemy": "1-0E" },
+      "WariantFormularza": "2",
+      "SystemInfo": "",
+      "DataWytworzeniaFa": ""
+    },
+    "Podmiot1": {
+      "PrefiksPodatnika": "",
+      "NrEORI": "",
+      "DaneIdentyfikacyjne": { "NIP": "", "Nazwa": "" },
+      "Adres": { "KodKraju": "", "AdresL1": "", "AdresL2": "", "GLN": "" },
+      "AdresKoresp": { "KodKraju": "", "AdresL1": "", "AdresL2": "", "GLN": "" },
+      "DaneKontaktowe": [],
+      "StatusInfoPodatnika": ""
+    },
+    "Podmiot2": {
+      "NrEORI": "",
+      "DaneIdentyfikacyjne": {
+        "NIP": "",
+        "KodUE": "",
+        "NrVatUE": "",
+        "KodKraju": "",
+        "NrID": "",
+        "BrakID": "",
+        "Nazwa": ""
+      },
+      "Adres": { "KodKraju": "", "AdresL1": "", "AdresL2": "", "GLN": "" },
+      "AdresKoresp": { "KodKraju": "", "AdresL1": "", "AdresL2": "", "GLN": "" },
+      "DaneKontaktowe": [],
+      "NrKlienta": "",
+      "IDNabywcy": ""
+    },
+    "Podmiot3": [],
+    "PodmiotUpowazniony": {
+      "NrEORI": "",
+      "DaneIdentyfikacyjne": { "NIP": "", "Nazwa": "" },
+      "Adres": { "KodKraju": "", "AdresL1": "", "AdresL2": "", "GLN": "" },
+      "AdresKoresp": { "KodKraju": "", "AdresL1": "", "AdresL2": "", "GLN": "" },
+      "DaneKontaktowe": [],
+      "RolaPU": ""
+    },
+    "Fa": {
+      "KodWaluty": "PLN",
+      "P_1": "",
+      "P_1M": "",
+      "P_2": "",
+      "WZ": [],
+      "P_6": "",
+      "OkresFa": { "P_6_Od": "", "P_6_Do": "" },
+      "P_13_1": "",
+      "P_14_1": "",
+      "P_14_1W": "",
+      "P_13_2": "",
+      "P_14_2": "",
+      "P_14_2W": "",
+      "P_13_3": "",
+      "P_14_3": "",
+      "P_14_3W": "",
+      "P_13_4": "",
+      "P_14_4": "",
+      "P_14_4W": "",
+      "P_13_5": "",
+      "P_14_5": "",
+      "P_13_6_1": "",
+      "P_13_6_2": "",
+      "P_13_6_3": "",
+      "P_13_7": "",
+      "P_13_8": "",
+      "P_13_9": "",
+      "P_13_10": "",
+      "P_13_11": "",
+      "P_15": "",
+      "KursWalutyZ": "",
+      "Adnotacje": {
+        "P_16": "2",
+        "P_17": "2",
+        "P_18": "2",
+        "P_18A": "2",
+        "Zwolnienie": { "P_19": "", "P_19A": "", "P_19B": "", "P_19C": "", "P_19N": "1" },
+        "NoweSrodkiTransportu": {
+          "P_22": "",
+          "P_42_5": "",
+          "NowySrodekTransportu": [],
+          "P_22N": "1"
+        },
+        "P_23": "2",
+        "PMarzy": {
+          "P_PMarzy": "",
+          "P_PMarzy_2": "",
+          "P_PMarzy_3_1": "",
+          "P_PMarzy_3_2": "",
+          "P_PMarzy_3_3": "",
+          "P_PMarzyN": "1"
+        }
+      },
+      "RodzajFaktury": "VAT",
+      "PrzyczynaKorekty": "",
+      "TypKorekty": "",
+      "DaneFaKorygowanej": [],
+      "OkresFaKorygowanej": "",
+      "NrFaKorygowany": "",
+      "Podmiot1K": {
+        "PrefiksPodatnika": "",
+        "DaneIdentyfikacyjne": { "NIP": "", "Nazwa": "" },
+        "Adres": { "KodKraju": "", "AdresL1": "", "AdresL2": "", "GLN": "" }
+      },
+      "Podmiot2K": [],
+      "P_15ZK": "",
+      "KursWalutyZK": "",
+      "ZaliczkaCzesciowa": [],
+      "FP": "",
+      "TP": "",
+      "DodatkowyOpis": [],
+      "FakturaZaliczkowa": [],
+      "ZwrotAkcyzy": "",
+      "FaWiersz": [],
+      "Rozliczenie": {
+        "Obciazenia": [],
+        "SumaObciazen": "",
+        "Odliczenia": [],
+        "SumaOdliczen": "",
+        "DoZaplaty": "",
+        "DoRozliczenia": ""
+      },
+      "Platnosc": {
+        "Zaplacono": "",
+        "DataZaplaty": "",
+        "ZnacznikZaplatyCzesciowej": "",
+        "ZaplataCzesciowa": [],
+        "TerminPlatnosci": [],
+        "FormaPlatnosci": "",
+        "PlatnoscInna": "",
+        "OpisPlatnosci": "",
+        "RachunekBankowy": [],
+        "RachunekBankowyFaktora": [],
+        "Skonto": { "WarunkiSkonta": "", "WysokoscSkonta": "" }
+      },
+      "WarunkiTransakcji": {
+        "Umowy": [],
+        "Zamowienia": [],
+        "NrPartiiTowaru": [],
+        "WarunkiDostawy": "",
+        "KursUmowny": "",
+        "WalutaUmowna": "",
+        "Transport": [],
+        "PodmiotPosredniczacy": ""
+      },
+      "Zamowienie": { "WartoscZamowienia": "", "ZamowienieWiersz": [] }
+    },
+    "Stopka": { "Informacje": [], "Rejestry": [] }
+  }
+}
