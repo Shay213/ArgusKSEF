@@ -45,10 +45,13 @@ const PreviewXML = (): JSX.Element => {
               <DialogTitle>Kod XML Faktury</DialogTitle>
             </DialogHeader>
             <ScrollArea className="h-[500px]">
-              <XMLViewer xml={context.ksefXML} theme={{
-                textColor: themeContext.theme === 'light' ? '#374151' : '#f3f4f6',
-                tagColor: themeContext.theme === 'light' ? '#ea580c' : '#fdba74'
-              }} />
+              <XMLViewer
+                xml={context.ksefXML}
+                theme={{
+                  textColor: themeContext.theme === 'light' ? '#374151' : '#f3f4f6',
+                  tagColor: themeContext.theme === 'light' ? '#ea580c' : '#fdba74'
+                }}
+              />
             </ScrollArea>
           </DialogContent>
         </Dialog>

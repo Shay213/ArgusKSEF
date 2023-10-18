@@ -50,7 +50,7 @@ const api = {
     ipcRenderer.send('show-save-dialog', xml)
   },
   onSaveDialogResponse: (callback: (obj: { success: boolean; error: string }) => void): void => {
-    ipcRenderer.on('save-dialog-response', (event, result) => {
+    ipcRenderer.on('save-dialog-response', (_event, result) => {
       callback(result)
     })
   }
