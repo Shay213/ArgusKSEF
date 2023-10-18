@@ -62,8 +62,6 @@ const Fa = ({ template }: Props): JSX.Element => {
     defaultValues: window.api.merge(defaultFaValues, template?.Faktura.Fa ?? {})
   })
 
-  console.log(form.watch())
-
   const onSubmit = async (values): Promise<void> => {
     setIsLoading(true)
     let transports = values.WarunkiTransakcji.Transport
