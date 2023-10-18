@@ -41,4 +41,5 @@ npmRebuild: false
 publish:
   provider: github
   repo: ArgusKSEF
+  token: ${{GH_TOKEN}}
   owner: Shay213
