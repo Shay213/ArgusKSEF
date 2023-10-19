@@ -38,13 +38,13 @@ const router = createHashRouter(
         loader={templateLoader}
         errorElement={<TemplateFileError />}
       />
-      <Route path="/faktura-podstawowa" element={<FakturaPodstawowaHeader />}>
+      {/*<Route path="/faktura-podstawowa" element={<FakturaPodstawowaHeader />}>
         <Route path="step1" element={<LoadTemplate />} />
         <Route path="step2" element={<ProcessXLSX />} />
         <Route path="step3" element={<FakturaPodstawowaForm />} />
         <Route path="error" element={<FakturaError />} />
         <Route path="success" element={<FakturaSuccess />} />
-      </Route>
+      </Route>*/}
     </Route>
   )
 )

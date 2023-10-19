@@ -19,6 +19,7 @@ module.exports = {
     "resources/**"
   ],
   win: {
+    target: "nsis", // Specify the target as NSIS for Windows
     executableName: "ArgusKSEF"
   },
   nsis: {
@@ -27,28 +28,6 @@ module.exports = {
     uninstallDisplayName: "${productName}",
     createDesktopShortcut: "always"
   },
-  mac: {
-    entitlementsInherit: "build/entitlements.mac.plist",
-    extendInfo: {
-      NSCameraUsageDescription: "Application requests access to the device's camera.",
-      NSMicrophoneUsageDescription: "Application requests access to the device's microphone.",
-      NSDocumentsFolderUsageDescription: "Application requests access to the user's Documents folder.",
-      NSDownloadsFolderUsageDescription: "Application requests access to the user's Downloads folder."
-    },
-    notarize: false
-  },
-  dmg: {
-    artifactName: "${name}-${version}.${ext}"
-  },
-  linux: {
-    target: ["AppImage", "snap", "deb"],
-    maintainer: "Dawid Pawelec",
-    category: "Utility"
-  },
-  appImage: {
-    artifactName: "${name}-${version}.${ext}"
-  },
-  npmRebuild: false,
   publish: {
     provider: "github",
     repo: "ArgusKSEF",
