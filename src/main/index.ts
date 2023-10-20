@@ -48,6 +48,22 @@ function createWindow(): void {
       })
   })
 
+  ipcMain.on('folder-path-dialog', (event) => {
+    dialog.showOpenDialog(mainWindow, {
+      title: 'Wybierz Folder',
+      properties: ['openDirectory']
+    })
+    .then((res) => {
+      if (!res.canceled) {
+        const folderPath = res.filePaths[0]
+        event.sender.send(`folder-path-dialog-response`, folderPath)
+      }
+    })
+    .catch(() => {
+      event.sender.send(`folder-path-dialog-response`, null)
+    })
+  })
+
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })

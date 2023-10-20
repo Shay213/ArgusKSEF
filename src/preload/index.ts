@@ -2,10 +2,14 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import fs from 'fs'
 import path from 'path'
+import {promises as fsPromises} from 'fs'
+import {format} from 'date-fns'
+import FileWatcher from './FileWatcher'
 const merge = require('deepmerge')
 // deepmerge ESM was dropped due to a webpack bug
 
 const filesPath = path.join(__dirname, '../../resources')
+const fileWatcher = new FileWatcher()
 
 // Custom APIs for renderer
 const api = {
@@ -50,9 +54,49 @@ const api = {
     ipcRenderer.send('show-save-dialog', xml)
   },
   onSaveDialogResponse: (callback: (obj: { success: boolean; error: string }) => void): void => {
-    ipcRenderer.on('save-dialog-response', (_event, result) => {
+    ipcRenderer.once('save-dialog-response', (_event, result) => {
       callback(result)
     })
+  },
+  getFolderPath: (): void => {
+    ipcRenderer.send('folder-path-dialog')
+  },
+  onGetFolderPathResponse: (callback: (folderPath: string | null) => void): void => {
+    ipcRenderer.once(`folder-path-dialog-response`, (_event, folderPath) => {
+      callback(folderPath)
+    })
+  },
+  getFolderFiles: async (folderPath: string): Promise<{
+    filename: string;
+      creationDate: string
+}[]> => {
+    const files = await fsPromises.readdir(folderPath)
+    const filteredFiles: {filename: string, creationDate: string}[] = []
+
+    for (const file of files) {
+      const fileExtension = path.extname(file).toLowerCase()
+
+      //if (fileExtension === '.xlsx') {
+        const filePath = path.join(folderPath, file)
+        const stats = await fsPromises.stat(filePath)
+        const creationDate = format(stats.birthtime, 'dd-MM-yyyy')
+        filteredFiles.push({filename: file, creationDate})
+      //}
+    }
+    return filteredFiles
+  },
+  startWatcher: async (
+    type: 'xlsx' | 'xml',
+    folderPath: string,
+    handlers: {
+      onAdd: (file: { filename: string; creationDate: string | null }) => void
+      onRemove: (filename: string) => void
+      onError: (err: Error) => void
+    }
+  ): Promise<void> => {
+    console.log(folderPath, type)
+    await fileWatcher.watch(type, folderPath, handlers)
+    console.log(fileWatcher.getWatchers())
   }
 }
 
