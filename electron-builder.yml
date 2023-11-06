@@ -38,8 +38,3 @@ linux:
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
-publish:
-  provider: github
-  repo: ArgusKSEF
-  token: ${{ process.GH_TOKEN }}
-  owner: Shay213
