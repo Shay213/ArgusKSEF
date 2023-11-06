@@ -17,7 +17,6 @@ module.exports = {
   ],
   asarUnpack: ['resources/**'],
   win: {
-    target: 'nsis', // Specify the target as NSIS for Windows
     executableName: 'ArgusKSEF'
   },
   nsis: {
