@@ -6,6 +6,7 @@ import {
   TableHeader,
   TableRow
 } from '@renderer/components/ui/table'
+import { calculateBrutto, calculateVAT, safeParseFloat } from '@renderer/lib/utils'
 import { useEffect } from 'react'
 import { useWatch } from 'react-hook-form'
 
@@ -117,37 +118,6 @@ const FaWierszTotal = ({
       </Table>
     </div>
   )
-}
-
-function safeParseFloat(val: string | number): number {
-  if (typeof val === 'number') {
-    return val
-  }
-  const parsed = parseFloat(val)
-  return Number.isNaN(parsed) ? 0 : parsed
-}
-
-function calculateVAT(nettoAmount: number, vat: string): number {
-  const parsedVat = parseInt(vat)
-
-  if (!Number.isNaN(parsedVat)) {
-    const vatAmount = (nettoAmount * parsedVat) / 100
-    return vatAmount
-  } else {
-    return 0
-  }
-}
-
-function calculateBrutto(nettoAmount: number, vat: string): number {
-  const parsedVat = parseInt(vat)
-
-  if (!Number.isNaN(parsedVat)) {
-    const vatAmount = calculateVAT(nettoAmount, vat)
-    const bruttoAmount = nettoAmount + vatAmount
-    return bruttoAmount
-  } else {
-    return 0
-  }
 }
 
 export default FaWierszTotal

@@ -26,7 +26,6 @@ const FormStateButton = ({
   return (
     <Button
       type="submit"
-      {...props}
       disabled={isLoading}
       className={cn({
         'bg-green-600 border-green-700 dark:bg-green-800 dark:border-green-900 hover:bg-green-600 dark:hover:bg-green-800':
@@ -34,6 +33,7 @@ const FormStateButton = ({
         'bg-red-600 border-red-700 dark:bg-red-800 dar:border-red-900 hover:bg-red-600 dark:hover:bg-red-800':
           isError
       })}
+      {...props}
     >
       {isLoading ? (
         <>

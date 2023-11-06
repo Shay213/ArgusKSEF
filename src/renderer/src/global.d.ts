@@ -85,6 +85,15 @@ declare global {
     }
   }
 
+  interface IFiles {
+    filename: string
+    creationDate: Date | null
+  }
+
+  interface ExtendedIFiles extends IFiles {
+    binding: string
+  }
+
   interface IGetFormValuesRef {
     getFromValues: () => ZFa | ZPodmiot1 | ZPodmiot2 | ZPodmiot3 | ZStopka
   }

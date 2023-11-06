@@ -1,6 +1,5 @@
 import { CardContent } from '@renderer/components/ui/card'
 import { Form } from '@renderer/components/ui/form'
-import { useCreateFakturaContext } from '@renderer/context/createFakturaContext'
 import { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import Informacje from '../../FormSections/Informacje'
@@ -8,6 +7,7 @@ import Rejestry from '../../FormSections/Rejestry'
 
 interface Props {
   getFormValueRef: (obj: { getFromValues: () => ZStopka }) => void
+  mappedTemplate: ITemplate | null
 }
 
 const defaultStopkaValues = {
@@ -15,14 +15,10 @@ const defaultStopkaValues = {
   Rejestry: []
 }
 
-const Stopka = ({ getFormValueRef }: Props): JSX.Element => {
-  const context = useCreateFakturaContext()
+const Stopka = ({ getFormValueRef, mappedTemplate }: Props): JSX.Element => {
   const form = useForm({
     // @ts-ignore need to recreate zod schema
-    defaultValues:
-      context?.mappedTemplate?.Faktura?.Stopka ??
-      context?.template?.Faktura.Stopka ??
-      defaultStopkaValues
+    defaultValues: mappedTemplate?.Faktura.Stopka ?? defaultStopkaValues
   })
 
   useEffect(() => {

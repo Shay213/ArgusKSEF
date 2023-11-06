@@ -49,19 +49,24 @@ function createWindow(): void {
   })
 
   ipcMain.on('folder-path-dialog', (event) => {
-    dialog.showOpenDialog(mainWindow, {
-      title: 'Wybierz Folder',
-      properties: ['openDirectory']
-    })
-    .then((res) => {
-      if (!res.canceled) {
-        const folderPath = res.filePaths[0]
-        event.sender.send(`folder-path-dialog-response`, folderPath)
-      }
-    })
-    .catch(() => {
-      event.sender.send(`folder-path-dialog-response`, null)
-    })
+    dialog
+      .showOpenDialog(mainWindow, {
+        title: 'Wybierz Folder',
+        properties: ['openDirectory']
+      })
+      .then((res) => {
+        if (!res.canceled) {
+          const folderPath = res.filePaths[0]
+          event.sender.send(`folder-path-dialog-response`, folderPath)
+        }
+      })
+      .catch(() => {
+        event.sender.send(`folder-path-dialog-response`, null)
+      })
+  })
+
+  ipcMain.on('show-in-file-explorer', (_event, path) => {
+    shell.showItemInFolder(path)
   })
 
   mainWindow.on('ready-to-show', () => {

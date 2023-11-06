@@ -3,7 +3,6 @@ import { Form } from '@renderer/components/ui/form'
 import defaultPodmiot1Values from '@renderer/data/defaultFormValues/defaultPodmiot1Values'
 import { useEffect } from 'react'
 import { CardContent } from '@renderer/components/ui/card'
-import { useCreateFakturaContext } from '@renderer/context/createFakturaContext'
 import NrEORI from '../../FormItems/NrEORI'
 import PrefiksPodatnika from '../../FormItems/PrefiksPodatnika'
 import StatusInfoPodatnika from '../../FormItems/StatusInfoPodatnika'
@@ -13,16 +12,13 @@ import DaneKontaktowe from '../../FormSections/DaneKontaktowe'
 
 interface Props {
   getFormValueRef: (obj: { getFromValues: () => ZPodmiot1 }) => void
+  mappedTemplate: ITemplate | null
 }
 
-const Sprzedawca = ({ getFormValueRef }: Props): JSX.Element => {
-  const context = useCreateFakturaContext()
+const Sprzedawca = ({ getFormValueRef, mappedTemplate }: Props): JSX.Element => {
   const form = useForm({
     // @ts-ignore need to fix zod schema
-    defaultValues:
-      context?.mappedTemplate?.Faktura?.Podmiot1 ??
-      context?.template?.Faktura.Podmiot1 ??
-      defaultPodmiot1Values
+    defaultValues: mappedTemplate?.Faktura.Podmiot1 ?? defaultPodmiot1Values
   })
 
   useEffect(() => {

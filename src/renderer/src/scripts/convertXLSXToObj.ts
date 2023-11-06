@@ -1,19 +1,18 @@
-import { read, utils } from 'xlsx'
+import { WorkBook, utils } from 'xlsx'
 import { filterEmptyValues, polishCountryToCode } from '@renderer/lib/utils'
 import format from 'date-fns/format'
 
 const Platnosc = {
-  gotowka: 1,
-  karta: 2,
-  bon: 3,
-  czek: 4,
-  kredyt: 5,
-  przelew: 6,
-  'platnosc mobilna': 7
+  gotowka: '1',
+  karta: '2',
+  bon: '3',
+  czek: '4',
+  kredyt: '5',
+  przelew: '6',
+  'platnosc mobilna': '7'
 }
 
-const convertXLSXToObj = (content: string | ArrayBuffer | null | undefined): XLSXObj => {
-  const workbook = read(content)
+const convertXLSXToObj = (workbook: WorkBook): XLSXObj => {
   const sheets = Object.keys(workbook.Sheets)
   const sheet = workbook.Sheets[sheets[0]]
   const data = utils.sheet_to_json(sheet, {

@@ -2,16 +2,10 @@ import { getRandomInt } from '@renderer/lib/utils'
 
 const saveTemplate = (content: string): Promise<ITemplate> => {
   return new Promise((resolve, reject) => {
-    window.api.saveFile('template.json', content, (err) => {
-      if (err) {
-        reject(err)
-        return
-      }
-      window.api.readFile('template.json', (err, data) => {
-        if (err) {
-          reject(err)
-          return
-        }
+    window.api
+      .saveFile('template.json', content, true)
+      .then(() => window.api.readFile('template.json', true))
+      .then((data) => {
         setTimeout(
           () => {
             const dataParsed = JSON.parse(data)
@@ -20,7 +14,7 @@ const saveTemplate = (content: string): Promise<ITemplate> => {
           getRandomInt(600, 1200)
         )
       })
-    })
+      .catch((error) => reject(error))
   })
 }
 

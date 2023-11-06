@@ -1,17 +1,17 @@
-import { useCreateFakturaContext } from '@renderer/context/createFakturaContext'
+import AlertButton from './Buttons/AlertButton'
 import ThemeToggle from './ThemeToggle'
 import { Button } from './ui/button'
 import { FileEdit } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import AlertButton from './Buttons/AlertButton'
 
 const Nav = (): JSX.Element => {
   const location = useLocation()
-  const navigate = useNavigate()
-  const context = useCreateFakturaContext()
   const currentUrl = location.pathname
+  const isEditPage = currentUrl.startsWith('/edit')
+  const navigate = useNavigate()
+
   return (
-    <div className="flex items-center justify-between p-2">
+    <div className="flex items-center justify-between p-2 shadow-sm">
       <div>
         <p>
           <span className="text-sm font-semibold">Wersja schematu</span>: FA 2
@@ -19,21 +19,30 @@ const Nav = (): JSX.Element => {
       </div>
       <div className="flex items-center p-2 gap-4">
         <ThemeToggle />
-        {context?.isCreatingInvoice ? (
+        {isEditPage ? (
           <AlertButton
             dialogTitle="Jesteś absolutnie pewien?"
-            dialogDescription="Wszystkie zmiany na fakturze zostaną utracone."
-            variant="outline"
+            dialogDescription="Wszystkie niezapisane zmiany zostaną utracone"
             handleContinue={(): void => {
-              context.setIsCreatingInvoice(false)
               navigate('/template')
             }}
           >
-            <FileEdit className="w-4 h-4 mr-2" /> Templatka
+            <FileEdit className="w-4 h-4 mr-2" />
+            Templatka
           </AlertButton>
         ) : (
           <Link to={currentUrl !== '/template' ? '/template' : '/'}>
-            <Button variant="outline">
+            <Button
+              variant="outline"
+              onClick={(): void => {
+                if (currentUrl !== '/template') {
+                  navigate('/template')
+                } else {
+                  navigate('/')
+                  window.location.reload()
+                }
+              }}
+            >
               <FileEdit className="w-4 h-4 mr-2" />
               Templatka
             </Button>

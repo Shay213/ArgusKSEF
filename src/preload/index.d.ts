@@ -4,34 +4,36 @@ declare global {
   interface Window {
     electron: ElectronAPI
     api: {
-      saveFile: (
-        fileName: string,
-        fileContent: string,
-        callback: (err: NodeJS.ErrnoException | null) => void
-      ) => void
-      readFile: (
-        fileName: string,
-        callback: (err: NodeJS.ErrnoException | null, data: string) => void
-      ) => void
-      isFileInDir: (fileName: string, callback: (err: NodeJS.ErrnoException | null) => void) => void
+      saveFile: (pathToFile: string, fileContent: string, isResource: boolean) => Promise<void>
+      readFile: (pathToFile: string, isResource?: boolean) => Promise<string>
+      isFileInDir: (pathToFile: string, isResource: boolean) => Promise<void>
+      readXlsx: (pathToFile: string) => WorkBook
+      createDir: (path: string) => Promise<void>
       merge: <T>(a: T, b: T) => T
       getPreviewXMLHeading: () => string
       showSaveDialog: (xml: string) => void
-      onSaveDialogResponse: (callback: (obj: { success: boolean; error: string }) => void) => void
+      onSaveDialogResponse: () => Promise<{
+        success: boolean
+        error: string
+      }>
       getFolderPath: () => void
-      onGetFolderPathResponse: (callback: (folderPath: string | null) => void) => void
-      getFolderFiles: (folderPath: string) => Promise<{
-        filename: string;
-        creationDate: string;
-    }[]>
-    startWatcher: (type: 'xlsx' | 'xml', folderPath: string, handlers: {
-      onAdd: (file: {
-          filename: string;
-          creationDate: string | null;
-      }) => void;
-      onRemove: (filename: string) => void;
-      onError: (err: Error) => void;
-  }) => Promise<void>
+      onGetFolderPathResponse: () => Promise<string | null>
+      getFolderFiles: (folderPath: string) => Promise<
+        {
+          filename: string
+          creationDate: Date | null
+        }[]
+      >
+      startWatcher: (
+        type: 'xlsx' | 'xml',
+        folderPath: string,
+        handlers: {
+          onAdd: (file: IFile) => void
+          onRemove: (filename: string) => void
+          onError: (err: Error) => void
+        }
+      ) => Promise<void>
+      showInFileExplorer: (path: string) => void
     }
   }
 }

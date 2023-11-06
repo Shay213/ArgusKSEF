@@ -5,7 +5,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@renderer/components/ui/dialog'
-import { useCreateFakturaContext } from '@renderer/context/createFakturaContext'
+import { useCreateFakturaContext } from '@renderer/context/XLSXBindingsProvider'
 import XMLViewer from 'react-xml-viewer'
 import { useToast } from '../ui/use-toast'
 import { Button } from '../ui/button'

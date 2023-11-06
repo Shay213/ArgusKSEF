@@ -5,7 +5,6 @@ import { Plus, Trash2 } from 'lucide-react'
 import defaultPodmiot3Values from '@renderer/data/defaultFormValues/defaultPodmiot3Values'
 import { useEffect } from 'react'
 import { CardContent } from '@renderer/components/ui/card'
-import { useCreateFakturaContext } from '@renderer/context/createFakturaContext'
 import FormSection from '../../FormItems-base/FormSection'
 import IDNabywcy from '../../FormItems/IDNabywcy'
 import NrEORI from '../../FormItems/NrEORI'
@@ -18,14 +17,13 @@ import Rola from '../../FormSections/Rola'
 
 interface Props {
   getFormValueRef: (obj: { getFromValues: () => ZPodmiot3[] }) => void
+  mappedTemplate: ITemplate | null
 }
 
-const PodmiotInny = ({ getFormValueRef }: Props): JSX.Element => {
-  const context = useCreateFakturaContext()
+const PodmiotInny = ({ getFormValueRef, mappedTemplate }: Props): JSX.Element => {
   const form = useForm({
     defaultValues: {
-      Podmiot3:
-        context?.mappedTemplate?.Faktura?.Podmiot3 ?? context?.template?.Faktura.Podmiot3 ?? []
+      Podmiot3: mappedTemplate?.Faktura.Podmiot3 ?? []
     }
   })
 

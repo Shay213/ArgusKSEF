@@ -28,6 +28,7 @@ const HomeButton = ({
           handleContinue={(e): void => {
             onClick?.(e)
             navigate('/')
+            window.location.reload()
           }}
           {...props}
         >

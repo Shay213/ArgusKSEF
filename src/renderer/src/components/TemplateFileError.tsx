@@ -28,37 +28,35 @@ const TemplateFileError = (): JSX.Element => {
   const navigate = useNavigate()
   const { toast } = useToast()
 
-  const handleCheckFile = (): void => {
-    window.api.isFileInDir('template.json', (err) => {
-      if (err) {
-        toast({
-          title: 'Plik nie został znaleziony',
-          variant: 'destructive'
-        })
-      } else {
-        toast({
-          title: 'Plik został znaleziony'
-        })
-      }
-    })
+  const handleCheckFile = async (): Promise<void> => {
+    try {
+      await window.api.isFileInDir('template.json', true)
+      toast({
+        title: 'Plik został znaleziony'
+      })
+    } catch (error) {
+      toast({
+        title: 'Plik nie został znaleziony',
+        variant: 'destructive'
+      })
+    }
   }
 
-  const handleCreateTemplate = (): void => {
-    window.api.saveFile('template.json', JSON.stringify(TEMPLATE), (err) => {
-      if (err) {
-        toast({
-          title: 'Nie udało się stworzyć pliku templatki.',
-          variant: 'destructive'
-        })
-      } else {
-        toast({
-          title: 'Plik templatki został stworzony.'
-        })
-        setTimeout(() => {
-          navigate(0)
-        }, 200)
-      }
-    })
+  const handleCreateTemplate = async (): Promise<void> => {
+    try {
+      await window.api.saveFile('template.json', JSON.stringify(TEMPLATE), true)
+      toast({
+        title: 'Plik templatki został stworzony.'
+      })
+      setTimeout(() => {
+        navigate(0)
+      }, 200)
+    } catch (error) {
+      toast({
+        title: 'Nie udało się stworzyć pliku templatki.',
+        variant: 'destructive'
+      })
+    }
   }
 
   return (

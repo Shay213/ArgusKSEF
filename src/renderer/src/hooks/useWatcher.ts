@@ -1,101 +1,93 @@
-import { useEffect, useState } from "react"
+import { useToast } from '@renderer/components/ui/use-toast'
+import { useXLSXBindingsContext } from '@renderer/context/XLSXBindingsProvider'
+import createXML from '@renderer/scripts/createXML'
+import { useEffect, useRef, useState } from 'react'
 
 type AcceptedTypesToWatch = 'xlsx' | 'xml'
-
-interface Files {
-  filename: string
-  creationDate: string
-}
-
-interface UseWatcherReturnType {
-  files: Files[]
-  isLoading: boolean
-  error: {message: string} | null
-  refetch: () => void
-  chooseFolderFromDialog: (handlers?: {
-    onError?: () => void;
-    onSuccess?: () => void;
-}) => void
-}
-
 interface Args {
   type: AcceptedTypesToWatch
+  setFiles: React.Dispatch<React.SetStateAction<IFiles[]>>
+  isAutoGenerateXML?: boolean
 }
 
-const useWatcher = ({type}: Args): UseWatcherReturnType => {
-  const [folderPath, setFolderPath] = useState<string | null>(null)
-  const [files, setFiles] = useState<Files[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<null | {message: string}>(null)
-  const [refetchTrigger, setRefetchTrigger] = useState(false)
+const useWatcher = ({ type, isAutoGenerateXML, setFiles }: Args): void => {
+  const [eventQueue, setEventQueue] = useState<(() => Promise<void> | void)[]>([])
+  const context = useXLSXBindingsContext()
+  const { toast } = useToast()
+  const count = useRef(0)
 
-  useEffect(() => {
-    if(folderPath) {
-      (async (): Promise<void> => {
-        setIsLoading(true)
-        try {
-          const files = await window.api.getFolderFiles(folderPath)
-          console.log(files)
-          setFiles(files)
-          setIsLoading(false)
-        } catch (error) {
-          setError({message: 'Nie udało się odczytać plików.'})
-          setIsLoading(false)
-        }
-      })()
-    }
-  }, [folderPath, refetchTrigger])
+  const folderPath = type === 'xlsx' ? context?.xlsxFolderPath : context?.xmlFolderPath
 
   useEffect(() => {
     if (folderPath) {
-      (async (): Promise<void> => {
-        await window.api.startWatcher(type, folderPath,
-          {
-            onAdd: (file) => {
-              const {creationDate, filename} = file
-              if(typeof creationDate === 'string') {
-                // file.creationDate did not work, typescript complaing about creationDate is null
-                setFiles((prev) => [...prev, {creationDate, filename}])
-                return
+      ;(async (): Promise<void> => {
+        await window.api.startWatcher(type, folderPath, {
+          onAdd: async (file: IFiles) => {
+            setEventQueue((prev) => {
+              return [
+                ...prev,
+                async (): Promise<void> => {
+                  if (
+                    isAutoGenerateXML &&
+                    type === 'xlsx' &&
+                    context?.xlsxFolderPath &&
+                    context?.xmlFolderPath
+                  ) {
+                    const { ksefXML, nrFaktury } = await createXML(
+                      `${context.xlsxFolderPath}/${file.filename}`
+                    )
+                    const xmlFileName = `${context?.xmlFolderPath}/ARGUS_Fa_${nrFaktury}.xml`
+
+                    await window.api.createDir(context?.xmlFolderPath)
+                    try {
+                      await window.api.saveFile(xmlFileName, ksefXML, false)
+                      await context?.saveBinding(file.filename, xmlFileName)
+                    } catch (error) {
+                      toast({
+                        title: 'Nie udało się zapisać pliku.',
+                        description:
+                          'Sprawdź czy masz uprawnienia do zapisu plików w folderze aplikacji.',
+                        variant: 'destructive'
+                      })
+                    }
+                  }
+                  setFiles((prevFiles) => [...prevFiles, file])
+                }
+              ]
+            })
+          },
+          onRemove: (filename: string) => {
+            setEventQueue((prev) => [
+              ...prev,
+              async (): Promise<void> => {
+                await context?.removeBinding(null, filename)
+                setFiles((prevFiles) => prevFiles.filter((file) => file.filename !== filename))
               }
-              setFiles((prev) => [...prev, {creationDate: '', filename}])
-            },
-            onRemove: (filename) => {
-              setFiles((prev) => prev.filter((file) => file.filename !== filename ))
-            },
-            onError: (err) => {
-              console.log(err)
-            }
+            ])
+          },
+          onError: (err: Error) => {
+            console.log(err)
           }
-        )
+        })
       })()
     }
-  }, [folderPath])
-
-  const refetch = (): void => {
-    setRefetchTrigger(prev => !prev)
-  }
-
-  const chooseFolderFromDialog = (handlers?: {onError?: () => void, onSuccess?: () => void}): void => {
-    window.api.getFolderPath()
-    window.api.onGetFolderPathResponse((folderPath) => {
-      if (folderPath) {
-        setFolderPath(folderPath)
-        handlers?.onSuccess?.()
-        return
-      } else {
-        handlers?.onError?.()
+  }, [context?.xlsxFolderPath, context?.xmlFolderPath, isAutoGenerateXML, type])
+  //console.log(eventQueue)
+  useEffect(() => {
+    if (eventQueue.length > 0 && count.current === 0) {
+      count.current++
+      const firstEvent = eventQueue[0]
+      const processFirstEvent = async (): Promise<void> => {
+        await firstEvent()
+        setEventQueue((prevQueue) => prevQueue.slice(1))
+        count.current = 0
       }
-    })
-  }
-
-  return {
-    files,
-    isLoading,
-    error,
-    refetch,
-    chooseFolderFromDialog
-  }
+      processFirstEvent()
+    }
+    return () => {
+      count.current = 0
+    }
+  }, [eventQueue])
 }
 
 export default useWatcher

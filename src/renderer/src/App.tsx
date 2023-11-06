@@ -8,14 +8,9 @@ import {
   Route
 } from 'react-router-dom'
 import Home from '@renderer/components/Home'
-import CreateFakturaContextProvider from './context/createFakturaContext'
+import XLSXBindingsProvider from './context/XLSXBindingsProvider'
 import TemplateFileError from './components/TemplateFileError'
-import LoadTemplate from './components/Forms/Faktury/LoadTemplate'
-import ProcessXLSX from './components/Forms/Faktury/ProcessXLSX'
 import FakturaPodstawowaForm from './components/Forms/Faktury/FakturaPodstawowa/FakturaPodstawowaForm'
-import FakturaPodstawowaHeader from './components/Forms/Faktury/FakturaPodstawowa/FakturaPodstawowaHeader'
-import FakturaError from './components/Forms/Faktury/errors/FakturaError'
-import FakturaSuccess from './components/Forms/Faktury/FakturaSuccess'
 
 const HeaderLayout = (): JSX.Element => (
   <div className="h-full w-full flex flex-col">
@@ -38,13 +33,7 @@ const router = createHashRouter(
         loader={templateLoader}
         errorElement={<TemplateFileError />}
       />
-      {/*<Route path="/faktura-podstawowa" element={<FakturaPodstawowaHeader />}>
-        <Route path="step1" element={<LoadTemplate />} />
-        <Route path="step2" element={<ProcessXLSX />} />
-        <Route path="step3" element={<FakturaPodstawowaForm />} />
-        <Route path="error" element={<FakturaError />} />
-        <Route path="success" element={<FakturaSuccess />} />
-      </Route>*/}
+      <Route path="edit/:filename" element={<FakturaPodstawowaForm />} />
     </Route>
   )
 )
@@ -52,9 +41,9 @@ const router = createHashRouter(
 function App(): JSX.Element {
   return (
     <>
-      <CreateFakturaContextProvider>
+      <XLSXBindingsProvider>
         <RouterProvider router={router} />
-      </CreateFakturaContextProvider>
+      </XLSXBindingsProvider>
     </>
   )
 }

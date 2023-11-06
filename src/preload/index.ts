@@ -2,9 +2,9 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import fs from 'fs'
 import path from 'path'
-import {promises as fsPromises} from 'fs'
-import {format} from 'date-fns'
-import FileWatcher from './FileWatcher'
+import { promises as fsPromises } from 'fs'
+import FileWatcher, { IFile } from './FileWatcher'
+import { WorkBook, readFile } from 'xlsx'
 const merge = require('deepmerge')
 // deepmerge ESM was dropped due to a webpack bug
 
@@ -13,29 +13,27 @@ const fileWatcher = new FileWatcher()
 
 // Custom APIs for renderer
 const api = {
-  saveFile: (
-    fileName: string,
-    fileContent: string,
-    callback: (err: NodeJS.ErrnoException | null) => void
-  ): void => {
-    //console.log(filesPath)
-    fs.writeFile(path.join(filesPath, fileName), fileContent, (err) =>
-      err ? callback(err) : callback(null)
-    )
+  saveFile: async (pathToFile: string, fileContent: string, isResource: boolean): Promise<void> => {
+    const filePath = isResource ? path.join(filesPath, pathToFile) : pathToFile
+    await fsPromises.writeFile(filePath, fileContent)
   },
-  readFile: (
-    fileName: string,
-    callback: (err: NodeJS.ErrnoException | null, data: string) => void
-  ): void => {
-    fs.readFile(path.join(filesPath, fileName), 'utf-8', (err, data) => {
-      callback(err, data)
-    })
+  readFile: async (pathToFile: string, isResource: boolean = true): Promise<string> => {
+    const resPath = isResource ? path.join(filesPath, pathToFile) : pathToFile
+    const data = await fsPromises.readFile(resPath, 'utf-8')
+    return data
   },
-  isFileInDir: (fileName: string, callback: (err: NodeJS.ErrnoException | null) => void): void => {
-    fs.access(path.join(filesPath, fileName), fs.constants.F_OK, (err) => {
-      callback(err)
-    })
+  isFileInDir: async (pathToFile: string, isResource: boolean): Promise<void> => {
+    const resPath = isResource ? path.join(filesPath, pathToFile) : pathToFile
+    await fsPromises.access(resPath, fs.constants.F_OK)
   },
+  createDir: async (path: string): Promise<void> => {
+    try {
+      await fsPromises.access(path, fs.constants.F_OK)
+    } catch (err) {
+      await fsPromises.mkdir(path)
+    }
+  },
+  readXlsx: (pathToFile: string): WorkBook => readFile(pathToFile),
   merge: <T>(a: T, b: T): T => merge(a, b),
   getPreviewXMLHeading: (): string => {
     return `
@@ -53,35 +51,35 @@ const api = {
   showSaveDialog: (xml: string): void => {
     ipcRenderer.send('show-save-dialog', xml)
   },
-  onSaveDialogResponse: (callback: (obj: { success: boolean; error: string }) => void): void => {
-    ipcRenderer.once('save-dialog-response', (_event, result) => {
-      callback(result)
+  onSaveDialogResponse: async (): Promise<{ success: boolean; error: string }> => {
+    return new Promise((resolve) => {
+      ipcRenderer.once('save-dialog-response', (_event, result) => {
+        resolve(result)
+      })
     })
   },
   getFolderPath: (): void => {
     ipcRenderer.send('folder-path-dialog')
   },
-  onGetFolderPathResponse: (callback: (folderPath: string | null) => void): void => {
-    ipcRenderer.once(`folder-path-dialog-response`, (_event, folderPath) => {
-      callback(folderPath)
+  onGetFolderPathResponse: async (): Promise<string | null> => {
+    return new Promise((resolve) => {
+      ipcRenderer.once(`folder-path-dialog-response`, (_event, folderPath) => {
+        resolve(folderPath)
+      })
     })
   },
-  getFolderFiles: async (folderPath: string): Promise<{
-    filename: string;
-      creationDate: string
-}[]> => {
+  getFolderFiles: async (folderPath: string): Promise<IFile[]> => {
     const files = await fsPromises.readdir(folderPath)
-    const filteredFiles: {filename: string, creationDate: string}[] = []
+    const filteredFiles: IFile[] = []
 
     for (const file of files) {
       const fileExtension = path.extname(file).toLowerCase()
 
-      //if (fileExtension === '.xlsx') {
+      if (fileExtension === '.xlsx' || fileExtension === '.xml') {
         const filePath = path.join(folderPath, file)
         const stats = await fsPromises.stat(filePath)
-        const creationDate = format(stats.birthtime, 'dd-MM-yyyy')
-        filteredFiles.push({filename: file, creationDate})
-      //}
+        filteredFiles.push({ filename: file, creationDate: stats.birthtime })
+      }
     }
     return filteredFiles
   },
@@ -89,14 +87,15 @@ const api = {
     type: 'xlsx' | 'xml',
     folderPath: string,
     handlers: {
-      onAdd: (file: { filename: string; creationDate: string | null }) => void
+      onAdd: (file: IFile) => void
       onRemove: (filename: string) => void
       onError: (err: Error) => void
     }
   ): Promise<void> => {
-    console.log(folderPath, type)
     await fileWatcher.watch(type, folderPath, handlers)
-    console.log(fileWatcher.getWatchers())
+  },
+  showInFileExplorer: (path: string): void => {
+    ipcRenderer.send('show-in-file-explorer', path)
   }
 }
 

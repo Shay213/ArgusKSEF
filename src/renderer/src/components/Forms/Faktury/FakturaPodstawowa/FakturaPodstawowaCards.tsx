@@ -6,6 +6,7 @@ import Stopka from './Stopka'
 
 interface CardsProps {
   getFormValueRef: (obj: IGetFormValuesRef) => void
+  mappedTemplate: ITemplate | null
 }
 
 const FakturaPodstawowaCards = [
