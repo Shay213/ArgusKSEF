@@ -15,6 +15,13 @@ const useWatcher = ({ type, isAutoGenerateXML, setFiles }: Args): void => {
   const context = useXLSXBindingsContext()
   const { toast } = useToast()
   const count = useRef(0)
+  const contextRef = useRef(context)
+  const isAutoGenerateXMLRef = useRef(isAutoGenerateXML)
+
+  useEffect(() => {
+    contextRef.current = context
+    isAutoGenerateXMLRef.current = isAutoGenerateXML
+  }, [context, isAutoGenerateXML])
 
   const folderPath = type === 'xlsx' ? context?.xlsxFolderPath : context?.xmlFolderPath
 
@@ -27,31 +34,33 @@ const useWatcher = ({ type, isAutoGenerateXML, setFiles }: Args): void => {
               return [
                 ...prev,
                 async (): Promise<void> => {
-                  if (
-                    isAutoGenerateXML &&
-                    type === 'xlsx' &&
-                    context?.xlsxFolderPath &&
-                    context?.xmlFolderPath
-                  ) {
-                    const { ksefXML, nrFaktury } = await createXML(
-                      `${context.xlsxFolderPath}/${file.filename}`
-                    )
-                    const xmlFileName = `${context?.xmlFolderPath}/ARGUS_Fa_${nrFaktury}.xml`
+                  setTimeout(async () => {
+                    if (
+                      isAutoGenerateXMLRef.current &&
+                      type === 'xlsx' &&
+                      contextRef.current?.xlsxFolderPath &&
+                      contextRef.current?.xmlFolderPath
+                    ) {
+                      const { ksefXML, nrFaktury } = await createXML(
+                        `${contextRef.current.xlsxFolderPath}/${file.filename}`
+                      )
+                      const xmlFileName = `${contextRef.current?.xmlFolderPath}/ARGUS_Fa_${nrFaktury}.xml`
 
-                    await window.api.createDir(context?.xmlFolderPath)
-                    try {
-                      await window.api.saveFile(xmlFileName, ksefXML, false)
-                      await context?.saveBinding(file.filename, xmlFileName)
-                    } catch (error) {
-                      toast({
-                        title: 'Nie udało się zapisać pliku.',
-                        description:
-                          'Sprawdź czy masz uprawnienia do zapisu plików w folderze aplikacji.',
-                        variant: 'destructive'
-                      })
+                      await window.api.createDir(contextRef.current?.xmlFolderPath)
+                      try {
+                        await window.api.saveFile(xmlFileName, ksefXML, false)
+                        await contextRef.current?.saveBinding(file.filename, xmlFileName)
+                      } catch (error) {
+                        toast({
+                          title: 'Nie udało się zapisać pliku.',
+                          description:
+                            'Sprawdź czy masz uprawnienia do zapisu plików w folderze aplikacji.',
+                          variant: 'destructive'
+                        })
+                      }
                     }
-                  }
-                  setFiles((prevFiles) => [...prevFiles, file])
+                    setFiles((prevFiles) => [...prevFiles, file])
+                  }, 200)
                 }
               ]
             })
@@ -60,7 +69,7 @@ const useWatcher = ({ type, isAutoGenerateXML, setFiles }: Args): void => {
             setEventQueue((prev) => [
               ...prev,
               async (): Promise<void> => {
-                await context?.removeBinding(null, filename)
+                await contextRef.current?.removeBinding(null, filename)
                 setFiles((prevFiles) => prevFiles.filter((file) => file.filename !== filename))
               }
             ])
@@ -71,7 +80,7 @@ const useWatcher = ({ type, isAutoGenerateXML, setFiles }: Args): void => {
         })
       })()
     }
-  }, [context?.xlsxFolderPath, context?.xmlFolderPath, isAutoGenerateXML, type])
+  }, [context?.xlsxFolderPath, context?.xmlFolderPath, type])
   //console.log(eventQueue)
   useEffect(() => {
     if (eventQueue.length > 0 && count.current === 0) {

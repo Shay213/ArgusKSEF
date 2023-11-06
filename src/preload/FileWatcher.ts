@@ -28,11 +28,13 @@ class FileWatcher {
       const { onAdd, onRemove, onError } = handlers
       watcher
         .on('add', (path, stats) => {
+          console.log('Add event fired from file watcher')
           const filename = this.getBaseName(path)
           const creationDate = stats?.birthtime ?? null
           onAdd({ filename, creationDate })
         })
         .on('unlink', (path) => {
+          console.log('Unlink event fired from file watcher')
           const filename = this.getBaseName(path)
           onRemove(filename)
         })
