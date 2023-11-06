@@ -5,7 +5,7 @@ module.exports = {
   appId: 'com.electron.argusKSEF',
   productName: 'ArgusKSEF',
   directories: {
-    buildResources: 'build'
+    buildResources: 'build',
   },
   files: [
     '!**/.vscode/*',
@@ -25,10 +25,30 @@ module.exports = {
     uninstallDisplayName: '${productName}',
     createDesktopShortcut: 'always'
   },
+  mac: {
+    entitlementsInherit: 'build/entitlements.mac.plist',
+    extendInfo: {
+      NSCameraUsageDescription: 'Application requests access to the device\'s camera.',
+      NSMicrophoneUsageDescription: 'Application requests access to the device\'s microphone.',
+      NSDocumentsFolderUsageDescription: 'Application requests access to the user\'s Documents folder.',
+      NSDownloadsFolderUsageDescription: 'Application requests access to the user\'s Downloads folder.',
+    },
+    notarize: false,
+    dmg: {
+      artifactName: '${name}-${version}.${ext}'
+    }
+  },
+  linux: {
+    target: ['AppImage', 'snap', 'deb'],
+    maintainer: 'Dawid Pawelec',
+    category: 'Utility',
+    appImage: {
+      artifactName: '${name}-${version}.${ext}'
+    }
+  },
+  npmRebuild: false,
   publish: {
     provider: 'github',
-    repo: 'ArgusKSEF',
-    token: process.env.GH_TOKEN, // Use environment variable
-    owner: 'Shay213'
+    token: process.env.GITHUB_TOKEN
   }
 }
