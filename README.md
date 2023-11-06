@@ -1,34 +1,28 @@
-# package
+# Pole Płatności
 
-An Electron application with React and TypeScript
+Struktura XML ma pewne ograniczenia i oczekuje określonych wartości, dlatego pole związane
+z płatnością powinno mieć jedną z następujących wartości:
 
-## Recommended IDE Setup
+- `gotowka`
+- `karta`
+- `bon`
+- `czek`
+- `kredyt`
+- `przelew`
+- `platnosc mobilna`
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+# Pole Stopki
 
-## Project Setup
+Stopka faktury (pozostałe dane na fakturze) dodać do templatki czy zczytywać z pliku xlsx?
 
-### Install
+# Pole NIP dla sprzedawcy i klienta
 
-```bash
-$ npm install
-```
+Struktura xml wymaga NIPu w polu sprzedawcy
 
-### Development
+W polu sprzedawcy:
 
-```bash
-$ npm run dev
-```
+- `NIP/VAT UE No: 5439589347`
 
-### Build
+W polu klienta:
 
-```bash
-# For windows
-$ npm run build:win
-
-# For macOS
-$ npm run build:mac
-
-# For Linux
-$ npm run build:linux
-```
+- `3334589347`
